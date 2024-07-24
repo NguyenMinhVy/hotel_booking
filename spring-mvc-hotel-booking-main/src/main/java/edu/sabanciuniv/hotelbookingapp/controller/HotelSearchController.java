@@ -88,7 +88,7 @@ public class HotelSearchController {
     }
 
     @GetMapping("/hotel-details/{id}")
-    public String showHotelDetails(@PathVariable Long id, @RequestParam String checkinDate, @RequestParam String checkoutDate, Model model, RedirectAttributes redirectAttributes) {
+    public String showHotelDetails(@PathVariable Long id, @RequestParam String checkinDate, @RequestParam String checkoutDate, @RequestParam(required = false) Boolean fromSearch, Model model, RedirectAttributes redirectAttributes) {
         try {
             LocalDate parsedCheckinDate = LocalDate.parse(checkinDate);
             LocalDate parsedCheckoutDate = LocalDate.parse(checkoutDate);
@@ -109,12 +109,22 @@ public class HotelSearchController {
 
         } catch (DateTimeParseException e) {
             log.error("Invalid date format provided", e);
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid date format. Please use the search form.");
-            return "redirect:/search";
+            if (fromSearch) {
+                model.addAttribute("errorMessage", "Invalid date format. Please use the search form.");
+                return "hotelsearch/hotel-details";
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Invalid date format. Please use the search form.");
+                return "redirect:/search";
+            }
         } catch (IllegalArgumentException e) {
             log.error("Invalid arguments provided for URL search", e);
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/search";
+            if (fromSearch) {
+                model.addAttribute("errorMessage", "Invalid date format. Please use the search form.");
+                return "hotelsearch/hotel-details";
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+                return "redirect:/search";
+            }
         } catch (EntityNotFoundException e) {
             log.error("No hotel found with ID {}", id);
             redirectAttributes.addFlashAttribute("errorMessage", "The selected hotel is no longer available. Please start a new search.");

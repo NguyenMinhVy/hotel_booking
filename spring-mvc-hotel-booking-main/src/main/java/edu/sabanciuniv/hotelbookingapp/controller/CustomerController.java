@@ -1,11 +1,14 @@
 package edu.sabanciuniv.hotelbookingapp.controller;
 
 import edu.sabanciuniv.hotelbookingapp.model.dto.BookingDTO;
+import edu.sabanciuniv.hotelbookingapp.model.dto.CartDTO;
 import edu.sabanciuniv.hotelbookingapp.service.BookingService;
+import edu.sabanciuniv.hotelbookingapp.service.CartService;
 import edu.sabanciuniv.hotelbookingapp.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +30,9 @@ public class CustomerController {
     private final UserService userService;
     private final BookingService bookingService;
 
+    @Autowired
+    CartService cartService;
+
     @GetMapping("/dashboard")
     public String dashboard() {
         return "customer/dashboard";
@@ -39,6 +45,24 @@ public class CustomerController {
             List<BookingDTO> bookingDTOs = bookingService.findBookingsByCustomerId(customerId);
             model.addAttribute("bookings", bookingDTOs);
             return "customer/bookings";
+        } catch (EntityNotFoundException e) {
+            log.error("No customer found with the provided ID", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Customer not found. Please log in again.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            log.error("An error occurred while listing bookings", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "An unexpected error occurred. Please try again later.");
+            return "redirect:/";
+        }
+    }
+
+    @GetMapping("/carts")
+    public String listCarts(Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Long customerId = getCurrentCustomerId();
+            List<CartDTO> cartDTOS = cartService.findCartsByCustomerId(customerId);
+            model.addAttribute("carts", cartDTOS);
+            return "customer/carts";
         } catch (EntityNotFoundException e) {
             log.error("No customer found with the provided ID", e);
             redirectAttributes.addFlashAttribute("errorMessage", "Customer not found. Please log in again.");

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout-main}">
+<head>
+    <title>Homepage</title>
+    <style>
+        body {
+            background-image: url('/img/maldives-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .content {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .hotel-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .hotel-item {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            width: calc(33.333% - 20px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .hotel-item:hover {
+            transform: translateY(-10px);
+            background-color: cornflowerblue;
+            color: #333333;
+        }
+        .hotel-details {
+            padding: 15px;
+        }
+        .hotel-details h2 {
+            margin: 0 0 10px;
+            font-size: 1.5em;
+        }
+
+        .hotel-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .hotel-details p strong {
+            color: #333;
+        }
+        .hotel-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .hotel-link:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+<th:block layout:fragment="content">
+    <div class="content container pt-5">
+        <div class="row justify-content-center align-items-start">
+            <div class="col-12 text-center">
+                <h1 class="display-5 mb-5"><strong>"Every journey is a step closer to finding who you truly are."</strong></h1>
+                <p class="lead fs-3 mb-5">We believe in making your travel plans simple and enjoyable.<br>Let's start a new
+                    journey!</p>
+                <a href="/login" class="btn btn-primary btn-lg">Explore - Dream - Discover</a>
+            </div>
+        </div>
+    </div>
+    <div class="hotel-list">
+        <div th:each="hotel : ${hotels}" class="hotel-item">
+            <a th:href="@{/hotel-details/{id}(id=${hotel.id}, checkinDate=${checkInDate}, checkoutDate=${checkOutDate})}" class="hotel-link">
+            <div class="hotel-details">
+                <h2 th:text="${hotel.name}"></h2>
+                <p th:text="'Street: ' + ${hotel.addressDTO.addressLine}"></p>
+                <p th:text="'City: ' + ${hotel.addressDTO.city}"></p>
+                <p th:text="'State: ' + ${hotel.addressDTO.country}"></p>
+            </div>
+            </a>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

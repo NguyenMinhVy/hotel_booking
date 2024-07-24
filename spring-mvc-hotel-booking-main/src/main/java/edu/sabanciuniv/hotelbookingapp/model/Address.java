@@ -3,6 +3,8 @@ package edu.sabanciuniv.hotelbookingapp.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -25,6 +27,9 @@ public class Address {
 
     @Column(nullable = false)
     private String country;
+
+    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Hotel> hotelList = new ArrayList<>();
 
     @Override
     public String toString() {

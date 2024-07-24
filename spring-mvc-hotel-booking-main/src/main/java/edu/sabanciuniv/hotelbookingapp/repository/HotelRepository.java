@@ -27,7 +27,7 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
             "JOIN h.rooms r " +
             "LEFT JOIN Availability a ON a.room.id = r.id " +
             "AND a.date >= :checkinDate AND a.date < :checkoutDate " +
-            "WHERE h.address.city = :city " +
+            "WHERE unaccent(LOWER(h.address.city)) ILIKE unaccent(LOWER(CONCAT('%', :city, '%'))) " +
             "AND (a IS NULL OR a.availableRooms > 0) " +
             "GROUP BY h.id, r.id " +
             "HAVING COUNT(DISTINCT a.date) + SUM(CASE WHEN a IS NULL THEN 1 ELSE 0 END) = :numberOfDays")

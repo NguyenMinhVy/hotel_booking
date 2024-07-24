@@ -47,7 +47,7 @@
                             <div class="col-md-4">
                                 <!-- Image placeholder -->
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-6">
@@ -79,10 +79,14 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2 d-flex align-items-center">
-                                <a th:href="@{/hotel-details/{id}(id=${hotel.id}, checkinDate=${checkinDate}, checkoutDate=${checkoutDate})}" class="btn btn-primary w-100 my-2 mx-3">Book
+                            <div class="col-md-3 d-flex align-items-center" style="display: flex">
+                                <a th:href="@{/hotel-details/{id}(id=${hotel.id}, checkinDate=${checkinDate}, checkoutDate=${checkoutDate})}" class="btn btn-primary w-50 my-2 mx-3">Book
                                     now</a>
+                                <a th:href="@{/hotel-details/{id}(id=${hotel.id}, checkinDate=${checkinDate}, checkoutDate=${checkoutDate})}" class="btn btn-primary w-50 my-2 mx-3">Add to Cart</a>
                             </div>
+<!--                            <div class="col-md-2 d-flex align-items-center">-->
+<!--                                <a th:href="@{/hotel-details/{id}(id=${hotel.id}, checkinDate=${checkinDate}, checkoutDate=${checkoutDate})}" class="btn btn-primary w-100 my-2 mx-3">Add to Cart</a>-->
+<!--                            </div>-->
                         </div>
                     </div>
                 </div>

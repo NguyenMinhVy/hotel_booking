@@ -1,26 +1,37 @@
 package edu.sabanciuniv.hotelbookingapp.controller;
 
 import edu.sabanciuniv.hotelbookingapp.exception.UsernameAlreadyExistsException;
+import edu.sabanciuniv.hotelbookingapp.model.dto.HotelDTO;
 import edu.sabanciuniv.hotelbookingapp.model.enums.RoleType;
 import edu.sabanciuniv.hotelbookingapp.model.dto.UserRegistrationDTO;
 import edu.sabanciuniv.hotelbookingapp.security.RedirectUtil;
+import edu.sabanciuniv.hotelbookingapp.service.HotelService;
 import edu.sabanciuniv.hotelbookingapp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
 
-    private final UserService userService;
+    @Autowired
+    private  UserService userService;
+
+    @Autowired
+    private HotelService hotelService;
 
     @GetMapping("/")
     public String homePage(Authentication authentication) {
@@ -31,11 +42,17 @@ public class AuthController {
     }
 
     @GetMapping("/home")
-    public String home(Authentication authentication) {
+    public String home(Model model) {
+        List<HotelDTO> hotelDTOList = hotelService.findAllHotels();
+        LocalDate checkInDate = LocalDate.now();
+        LocalDate checkOutDate = checkInDate.plusDays(1);
+        model.addAttribute("hotels", hotelDTOList);
+        model.addAttribute("checkInDate", checkInDate);
+        model.addAttribute("checkOutDate", checkOutDate);
 //        String redirect = getAuthenticatedUserRedirectUrl(authentication);
 //        if (redirect != null) return redirect;
         log.debug("Accessing home page");
-        return "index";
+        return "indexAfterLogin";
     }
 
     @GetMapping("/login")

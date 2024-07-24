@@ -4,10 +4,22 @@
 <head>
     <title>Hotel Details</title>
     <th:block th:insert="~{fragment/leaflet :: leaflet-css}"></th:block>
+    <script>
+        function reloadPage() {
+            // Lấy giá trị từ các trường ngày
+            let checkinDate = document.getElementById('checkinDate').value;
+            let checkoutDate = document.getElementById('checkoutDate').value;
+
+            let hotelId = [[${hotel.id}]];
+            let fromSearch = true
+            window.location.href = '/hotel-details/' + hotelId + '?checkinDate=' + checkinDate + '&checkoutDate=' + checkoutDate + '&fromSearch=' + fromSearch;
+        }
+    </script>
 </head>
 <body>
 <th:block layout:fragment="content">
     <div class="container">
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
         <div class="row align-items-stretch mb-4">
             <div class="col-md-6">
                 <h3 class="mb-3"><strong th:text="${hotel.name}">Hotel Name</strong></h3>
@@ -23,10 +35,17 @@
             <div class="col-md-12">
                 <h4>Availability</h4>
                 <p>
-                    <span th:text="${checkinDate}"></span>
+                    <label for="checkinDate">Check-in:</label>
+                    <input id="checkinDate" type="date" th:value="${checkinDate}">
+                    <p class="text-danger" th:if="${#fields.hasErrors('checkinDate')}" th:errors="*{checkinDate}"></p>
+
                     <span class="mx-3">>>></span>
-                    <span th:text="${checkoutDate}"></span>
+
+                    <label for="checkoutDate">Check-out:</label>
+                    <input id="checkoutDate" type="date" th:value="${checkoutDate}">
+                    <p class="text-danger" th:if="${#fields.hasErrors('checkoutDate')}" th:errors="*{checkoutDate}"></p>
                 </p>
+                <button onclick="reloadPage()">Reload</button>
             </div>
         </div>
         <div class="row">
@@ -156,6 +175,23 @@
 
             // Initial function calls
             calculateTotal();
+
+            let today = new Date().toISOString().split('T')[0];
+
+            // Thiết lập ngày tối thiểu cho checkinDate
+            let checkinInput = document.getElementById('checkinDate');
+            checkinInput.setAttribute('min', today);
+
+            // Thiết lập ngày tối thiểu cho checkoutDate
+            let checkoutInput = document.getElementById('checkoutDate');
+
+            checkinInput.addEventListener('change', function() {
+                let checkinDate = checkinInput.value;
+                if (checkinDate) {
+                    // Cập nhật thuộc tính min cho checkoutDate dựa trên checkinDate
+                    checkoutInput.setAttribute('min', checkinDate);
+                }
+            });
         });
     </script>
 </th:block>
