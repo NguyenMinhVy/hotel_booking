@@ -42,6 +42,12 @@ public class Cart {
     @Column(nullable = false)
     private LocalDate checkoutDate;
 
+    @OneToOne(mappedBy = "cart")
+    private Booking booking;
+
+    @Column
+    private boolean delFlag;
+
 //    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
 //    @Builder.Default
 //    private List<BookedRoom> bookedRooms = new ArrayList<>();

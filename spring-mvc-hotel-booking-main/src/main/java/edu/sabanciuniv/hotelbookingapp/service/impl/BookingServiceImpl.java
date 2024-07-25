@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,6 +30,9 @@ public class BookingServiceImpl implements BookingService {
     private final CustomerService customerService;
     private final HotelService hotelService;
 
+    @Autowired
+    private CartService cartService;
+
 
     @Override
     @Transactional
@@ -41,7 +45,10 @@ public class BookingServiceImpl implements BookingService {
         Hotel hotel = hotelService.findHotelById(bookingInitiationDTO.getHotelId())
                 .orElseThrow(() -> new EntityNotFoundException("Hotel not found with ID: " + bookingInitiationDTO.getHotelId()));
 
-        Booking booking = mapBookingInitDtoToBookingModel(bookingInitiationDTO, customer, hotel);
+        Cart cart = cartService.findByCartId(bookingInitiationDTO.getCartId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found with cart ID: " + bookingInitiationDTO.getCartId()));
+
+        Booking booking = mapBookingInitDtoToBookingModel(bookingInitiationDTO, customer, hotel, cart);
 
         return bookingRepository.save(booking);
     }
@@ -55,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(savedBooking);
         availabilityService.updateAvailabilities(bookingInitiationDTO.getHotelId(), bookingInitiationDTO.getCheckinDate(),
                 bookingInitiationDTO.getCheckoutDate(), bookingInitiationDTO.getRoomSelections());
+        cartService.deleteCartById(savedBooking.getCart().getId());
         return mapBookingModelToBookingDto(savedBooking);
     }
 
@@ -150,10 +158,11 @@ public class BookingServiceImpl implements BookingService {
                 .build();
     }
 
-    private Booking mapBookingInitDtoToBookingModel(BookingInitiationDTO bookingInitiationDTO, Customer customer, Hotel hotel) {
+    private Booking mapBookingInitDtoToBookingModel(BookingInitiationDTO bookingInitiationDTO, Customer customer, Hotel hotel, Cart cart) {
         Booking booking = Booking.builder()
                 .customer(customer)
                 .hotel(hotel)
+                .cart(cart)
                 .checkinDate(bookingInitiationDTO.getCheckinDate())
                 .checkoutDate(bookingInitiationDTO.getCheckoutDate())
                 .build();

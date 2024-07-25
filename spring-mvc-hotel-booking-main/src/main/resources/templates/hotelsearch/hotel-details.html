@@ -11,8 +11,8 @@
             let checkoutDate = document.getElementById('checkoutDate').value;
 
             let hotelId = [[${hotel.id}]];
-            let fromSearch = true
-            window.location.href = '/hotel-details/' + hotelId + '?checkinDate=' + checkinDate + '&checkoutDate=' + checkoutDate + '&fromSearch=' + fromSearch;
+            let fromScreen = "detail"
+            window.location.href = '/hotel-details/' + hotelId + '?checkinDate=' + checkinDate + '&checkoutDate=' + checkoutDate + '&fromScreen=' + fromScreen;
         }
     </script>
 </head>
@@ -45,7 +45,7 @@
                     <input id="checkoutDate" type="date" th:value="${checkoutDate}">
                     <p class="text-danger" th:if="${#fields.hasErrors('checkoutDate')}" th:errors="*{checkoutDate}"></p>
                 </p>
-                <button onclick="reloadPage()">Reload</button>
+                <button class="btn btn-primary btn-sm" onclick="reloadPage()">Reload</button>
             </div>
         </div>
         <div class="row">
@@ -101,6 +101,8 @@
                     <input type="hidden" name="checkinDate" th:value="${checkinDate}"/>
                     <input type="hidden" name="checkoutDate" th:value="${checkoutDate}"/>
                     <input type="hidden" name="durationDays" th:value="${durationDays}"/>
+                    <input type="hidden" name="fromScreen" th:value="${fromScreen}"/>
+                    <input type="hidden" name="cartId" th:value="${cartId}"/>
                 </form>
             </div>
         </div>

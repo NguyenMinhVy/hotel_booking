@@ -34,5 +34,6 @@ public class BookingDTO {
     private String customerEmail;
     private PaymentStatus paymentStatus;
     private PaymentMethod paymentMethod;
+    private CartDTO cartDTO;
     
 }

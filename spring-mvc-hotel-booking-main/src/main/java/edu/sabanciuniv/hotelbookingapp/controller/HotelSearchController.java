@@ -4,6 +4,7 @@ import edu.sabanciuniv.hotelbookingapp.model.dto.HotelAvailabilityDTO;
 import edu.sabanciuniv.hotelbookingapp.model.dto.HotelSearchDTO;
 import edu.sabanciuniv.hotelbookingapp.service.HotelSearchService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,8 +89,9 @@ public class HotelSearchController {
     }
 
     @GetMapping("/hotel-details/{id}")
-    public String showHotelDetails(@PathVariable Long id, @RequestParam String checkinDate, @RequestParam String checkoutDate, @RequestParam(required = false) Boolean fromSearch, Model model, RedirectAttributes redirectAttributes) {
+    public String showHotelDetails(@PathVariable Long id, @RequestParam String checkinDate, @RequestParam String checkoutDate, @RequestParam(required = false) String fromScreen, @RequestParam(required = false) Long cartId, Model model, RedirectAttributes redirectAttributes, HttpSession session) {
         try {
+            HotelAvailabilityDTO hotelAvailabilityDTOSession = (HotelAvailabilityDTO) session.getAttribute("hotelAvailabilityDTO");
             LocalDate parsedCheckinDate = LocalDate.parse(checkinDate);
             LocalDate parsedCheckoutDate = LocalDate.parse(checkoutDate);
 
@@ -103,24 +105,44 @@ public class HotelSearchController {
             model.addAttribute("durationDays", durationDays);
             model.addAttribute("checkinDate", checkinDate);
             model.addAttribute("checkoutDate", checkoutDate);
+            model.addAttribute("fromScreen", fromScreen);
+            model.addAttribute("cartId", cartId);
 
             return "hotelsearch/hotel-details";
 
 
         } catch (DateTimeParseException e) {
             log.error("Invalid date format provided", e);
-            if (fromSearch) {
-                model.addAttribute("errorMessage", "Invalid date format. Please use the search form.");
-                return "hotelsearch/hotel-details";
+            if (fromScreen != null) {
+                if (fromScreen.equals("detail")) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Invalid date format. Please use the search form.");
+                    return "redirect:/hotel-details";
+                } else  {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Invalid date format. Please use the search form.");
+                    return "redirect:/customer/carts";
+                }
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Invalid date format. Please use the search form.");
                 return "redirect:/search";
             }
         } catch (IllegalArgumentException e) {
             log.error("Invalid arguments provided for URL search", e);
-            if (fromSearch) {
-                model.addAttribute("errorMessage", "Invalid date format. Please use the search form.");
-                return "hotelsearch/hotel-details";
+            if (fromScreen != null) {
+                if (fromScreen.equals("detail")) {
+//                    redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+//                    return "redirect:/hotel-details";
+                    model.addAttribute("errorMessage", "Invalid date format. Please use the search form.");
+//                    model.addAttribute("hotel", hotelAvailabilityDTO);
+//                    model.addAttribute("durationDays", durationDays);
+                    model.addAttribute("checkinDate", checkinDate);
+                    model.addAttribute("checkoutDate", checkoutDate);
+                    model.addAttribute("fromScreen", fromScreen);
+                    model.addAttribute("cartId", cartId);
+                    return "hotelsearch/hotel-details";
+                } else {
+                    redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+                    return "redirect:/customer/carts";
+                }
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
                 return "redirect:/search";

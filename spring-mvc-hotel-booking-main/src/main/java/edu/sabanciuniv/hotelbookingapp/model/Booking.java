@@ -50,6 +50,10 @@ public class Booking {
     @OneToOne(mappedBy = "booking")
     private Payment payment;
 
+    @OneToOne
+    @JoinColumn(nullable = true)
+    private Cart cart;
+
     @PrePersist
     protected void onCreate() {
         this.confirmationNumber = UUID.randomUUID().toString().substring(0, 8);

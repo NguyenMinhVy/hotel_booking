@@ -1,12 +1,9 @@
 package edu.sabanciuniv.hotelbookingapp.service.impl;
 
-import edu.sabanciuniv.hotelbookingapp.model.Booking;
 import edu.sabanciuniv.hotelbookingapp.model.Cart;
 import edu.sabanciuniv.hotelbookingapp.model.Users;
 import edu.sabanciuniv.hotelbookingapp.model.dto.AddressDTO;
-import edu.sabanciuniv.hotelbookingapp.model.dto.BookingDTO;
 import edu.sabanciuniv.hotelbookingapp.model.dto.CartDTO;
-import edu.sabanciuniv.hotelbookingapp.model.dto.RoomSelectionDTO;
 import edu.sabanciuniv.hotelbookingapp.repository.CartRepository;
 import edu.sabanciuniv.hotelbookingapp.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +72,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void deleteCartById(Long id) {
-        cartRepository.deleteById(id);
+        cartRepository.disableCart(id);
+    }
+
+    @Override
+    public Optional<Cart> findByCartId(Long cartId) {
+        return cartRepository.findById(cartId);
     }
 }

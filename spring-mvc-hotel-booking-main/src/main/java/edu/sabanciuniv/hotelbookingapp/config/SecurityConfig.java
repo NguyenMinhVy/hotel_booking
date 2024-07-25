@@ -30,12 +30,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        String[] publicUrl = {
+                "/",
+                "/index",
+                "/register",
+                "/home",
+        };
+
         // In case CSRF disabling is needed for testing
         http.csrf(csrf -> csrf.disable());
 
         http.authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/css/**", "/js/**", "/webjars/**", "/img/**").permitAll()
-                                .requestMatchers("/", "/index", "/register/**").permitAll()
+                                .requestMatchers(publicUrl).permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/customer/**").hasRole("CUSTOMER")
                                 .requestMatchers("/manager/**").hasRole("HOTEL_MANAGER")
